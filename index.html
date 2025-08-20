@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Birthday</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="planet planet1"></div>
+    <div class="planet planet2"></div>
+    <div class="planet planet3"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Cosmic Birthday</h1>
+            <p class="subtitle">Discover the breathtaking image NASA captured on your birthday. Every day, the universe reveals new wonders - find out what cosmic beauty was documented on your special day.</p>
+        </header>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <label for="birthdate" class="input-label">Enter Your Birthday</label>
+                <input type="date" id="birthdate" class="date-input" max="2024-12-31">
+            </div>
+            <button id="discoverBtn" class="discover-btn">
+                🚀 Discover Your Cosmic Moment
+            </button>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Searching the cosmos for your special day...</p>
+        </div>
+        
+        <div class="result-section" id="resultSection">
+            <img id="resultImage" class="result-image" alt="NASA Image">
+            <h2 id="resultTitle" class="result-title"></h2>
+            <p id="resultDate" class="result-date"></p>
+            <p id="resultExplanation" class="result-explanation"></p>
+        </div>
+    </div>
+
+    <div class="fullscreen-modal" id="fullscreenModal">
+        <div class="fullscreen-content">
+            <button class="close-btn" id="closeFullscreenBtn">×</button>
+            <img id="fullscreenImage" class="fullscreen-image" alt="NASA Image Fullscreen">
+        </div>
+    </div>
+    
+
+    <div class="main-designer-credit">
+        Made by Salim Bouchakour - Vibe Project
+    </div>
+<script src="script.js"> </script>
+        
+</body>
+</html>
