@@ -1,12 +1,14 @@
 class NASAImageDiscovery {
     constructor() {
-        this.API_KEY = 'YOUR_API_KEY'; // Use your own key from api.nasa.gov
+        this.API_KEY = 'YOUR_API_KEY'; // Replace with your key from api.nasa.gov (or 'DEMO_KEY' for testing)
         this.BASE_URL = 'https://api.nasa.gov/planetary/apod';
         this.MIN_DATE = '1995-06-16'; // First APOD entry
+
         this.elements = this.cacheElements();
         this.errorTimer = null;
         this.videoFrame = null;
         this.requestId = 0;
+
         this.init();
     }
 
@@ -30,6 +32,10 @@ class NASAImageDiscovery {
     }
 
     init() {
+        if (this.API_KEY === 'YOUR_API_KEY') {
+            console.warn('Replace YOUR_API_KEY in the constructor with a valid NASA API key.');
+        }
+
         this.createStars();
         this.setDateLimits();
         this.bindEvents();
@@ -60,6 +66,7 @@ class NASAImageDiscovery {
             borderRadius: '50%',
             animationDelay: `${Math.random() * 3}s`
         });
+
         return star;
     }
 
@@ -121,11 +128,7 @@ class NASAImageDiscovery {
             if (requestId !== this.requestId) return;
 
             console.error('NASA API Error:', error);
-            this.showError(
-                error.status === 429
-                    ? 'Too many requests right now. Please wait a moment and try again. ⏳'
-                    : 'Unable to fetch your cosmic moment. The universe might be busy! Try a different date. ✨'
-            );
+            this.showError(this.getErrorMessage(error.status));
         } finally {
             if (requestId === this.requestId) this.showLoading(false);
         }
@@ -142,6 +145,17 @@ class NASAImageDiscovery {
         }
 
         return response.json();
+    }
+
+    getErrorMessage(status) {
+        switch (status) {
+            case 403:
+                return 'The NASA API key was rejected. Check that the key is valid. 🔑';
+            case 429:
+                return 'Too many requests right now. Please wait a moment and try again. ⏳';
+            default:
+                return 'Unable to fetch your cosmic moment. The universe might be busy! Try a different date. ✨';
+        }
     }
 
     // ---------- Validation ----------
@@ -170,135 +184,3 @@ class NASAImageDiscovery {
 
     displayResult(data, birthdate) {
         const { resultTitle, resultDate, resultExplanation } = this.elements;
-
-        resultTitle.textContent = data.title || 'Untitled';
-        resultDate.textContent = `Your Cosmic Birthday: ${this.formatDate(birthdate)}`;
-        resultExplanation.textContent = data.explanation || 'No description available.';
-
-        this.clearMedia();
-
-        if (data.media_type === 'video') {
-            this.showVideo(data);
-        } else {
-            this.showImage(data);
-        }
-
-        this.showResultSection();
-    }
-
-    showImage(data) {
-        const img = this.elements.resultImage;
-
-        // Try the HD image first, then fall back to the standard one
-        const sources = [data.hdurl, data.url].filter(Boolean);
-        if (sources.length === 0) {
-            this.showError('No image is available for this day. 🖼️');
-            return;
-        }
-
-        let attempt = 0;
-        img.alt = data.title || '';
-
-        img.onerror = () => {
-            attempt++;
-            if (attempt < sources.length) {
-                img.src = sources[attempt];
-            } else {
-                img.onerror = null;
-                img.style.display = 'none';
-                this.showError("This day's image could not be loaded. 🖼️");
-            }
-        };
-
-        img.src = sources[0];
-        img.style.display = 'block';
-    }
-
-    showVideo(data) {
-        const iframe = document.createElement('iframe');
-        iframe.src = data.url;
-        iframe.title = data.title || 'NASA video';
-        iframe.allowFullscreen = true;
-        iframe.width = '100%';
-        iframe.height = '400';
-        iframe.style.border = '0';
-
-        this.elements.resultImage.insertAdjacentElement('afterend', iframe);
-        this.videoFrame = iframe;
-    }
-
-    // Removes any previous image or video before showing a new entry
-    clearMedia() {
-        const img = this.elements.resultImage;
-        img.onerror = null;
-        img.removeAttribute('src');
-        img.style.display = 'none';
-
-        if (this.videoFrame) {
-            this.videoFrame.remove();
-            this.videoFrame = null;
-        }
-    }
-
-    formatDate(dateString) {
-        // Build the date in UTC so the display can't shift by a day
-        const [year, month, day] = dateString.split('-').map(Number);
-        return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            timeZone: 'UTC'
-        });
-    }
-
-    showResultSection() {
-        this.elements.resultSection.style.display = 'block';
-
-        requestAnimationFrame(() => {
-            this.elements.resultSection.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        });
-    }
-
-    showLoading(show) {
-        this.elements.loading.style.display = show ? 'block' : 'none';
-        this.elements.discoverBtn.disabled = show;
-    }
-
-    hideMessages() {
-        this.elements.errorMessage.style.display = 'none';
-        this.elements.resultSection.style.display = 'none';
-    }
-
-    showError(message) {
-        clearTimeout(this.errorTimer);
-        this.elements.errorMessage.textContent = message;
-        this.elements.errorMessage.style.display = 'block';
-
-        this.errorTimer = setTimeout(() => {
-            this.elements.errorMessage.style.display = 'none';
-        }, 5000);
-    }
-
-    // ---------- Fullscreen ----------
-
-    openFullscreen() {
-        const { resultImage, fullscreenImage, fullscreenModal } = this.elements;
-        if (!resultImage.getAttribute('src') || resultImage.style.display === 'none') return;
-
-        fullscreenImage.src = resultImage.src;
-        fullscreenModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    closeFullscreen() {
-        this.elements.fullscreenModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    window.nasaApp = new NASAImageDiscovery();
-});
