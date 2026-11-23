@@ -1,6 +1,6 @@
 class NASAImageDiscovery {
     constructor() {
-        this.API_KEY = 'YOUR_API_KEY'; // Replace with your key from api.nasa.gov (or 'DEMO_KEY' for testing)
+        this.API_KEY = 'J8BNFHgcBbGNJpLPF9Rw96KPWFkLHtb6HktgCKtk'; // Replace with your key from api.nasa.gov (or 'DEMO_KEY' for testing)
         this.BASE_URL = 'https://api.nasa.gov/planetary/apod';
         this.MIN_DATE = '1995-06-16'; // First APOD entry
 
