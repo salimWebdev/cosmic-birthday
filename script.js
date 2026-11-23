@@ -1,7 +1,7 @@
 // Optimized NASA APOD Discovery App
         class NASAImageDiscovery {
             constructor() {
-                this.API_KEY = '7bclSmA9AbRbGMCef9Ro8OMrVGbesJSOmbVJhGwv';
+                this.API_KEY = 'J8BNFHgcBbGNJpLPF9Rw96KPWFkLHtb6HktgCKtk';
                 this.BASE_URL = 'https://api.nasa.gov/planetary/apod';
                 this.elements = this.cacheElements();
                 this.init();
